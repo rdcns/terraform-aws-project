@@ -1,0 +1,8 @@
+package_update: true
+
+packages:
+  - prometheus-node-exporter
+
+runcmd:
+  - systemctl enable prometheus-node-exporter
+  - systemctl start prometheus-node-exporter
