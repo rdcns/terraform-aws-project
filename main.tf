@@ -23,11 +23,19 @@ terraform {
 # Bucket name has to be unique worldwide to act like a unique internet address for storage
 # Bucket is private by default
 
-module "vpc_cute" {
+module "my-basic-vpc" {
   source = "./modules/VPC"
 }
 
 module "my-instance" {
   source = "./modules/EC2"
+  ami = var.ami
+  instance_type = var.instance_type
 }
 
+module "my-load-balancer" {
+  source = "./modules/LoadBalancer"
+  security_group_id = module.my-instance.security_group_id
+  subnet_ids = [module.my-basic-vpc.public_subnet_id]
+  vpc = module.my-basic-vpc.vpc
+}

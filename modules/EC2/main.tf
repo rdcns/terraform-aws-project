@@ -1,7 +1,7 @@
 resource "aws_instance" "instance" {
   ami           = local.resolved_ami
   instance_type = "t3.micro"
-  security_groups = [aws_security_group.instances.name]
+  security_groups = [aws_security_group.security_group.name]
   user_data = <<-EOF
               #!/bin/bash
               echo "Hello, World!" > index.html
@@ -28,7 +28,7 @@ resource "aws_key_pair" "deployer" {
   public_key = file("${path.module}/../../keys/test-aws-key.pub")
 }
 
-resource "aws_security_group" "instances" {
+resource "aws_security_group" "security_group" {
   name = "instance-security-group"
 }
 
@@ -38,7 +38,7 @@ resource "aws_security_group_rule" "allow_http" {
   from_port         = 8080
   to_port           = 8080
   protocol          = "tcp"
-  security_group_id = aws_security_group.instances.id
+  security_group_id = aws_security_group.security_group.id
   cidr_blocks       = ["0.0.0.0/0"] #All IPs can access the instance on port 8080
 }
 
@@ -47,7 +47,7 @@ resource "aws_security_group_rule" "allow_ssh" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  security_group_id = aws_security_group.instances.id
+  security_group_id = aws_security_group.security_group.id
   cidr_blocks       = ["0.0.0.0/0"] #All IPs can access the instance on port 22
 }
 
@@ -56,6 +56,6 @@ resource "aws_security_group_rule" "allow_alb_all_outbound" {
   from_port         = 0
   to_port           = 0
   protocol          = "tcp"
-  security_group_id = aws_security_group.instances.id
+  security_group_id = aws_security_group.security_group.id
   cidr_blocks       = ["0.0.0.0/0"] #All IPs can access the instance
 }
