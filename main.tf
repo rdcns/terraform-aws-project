@@ -27,7 +27,13 @@ module "my-basic-vpc" {
   source = "./modules/VPC"
 }
 
-module "my-instance" {
+module "my-instance-1" {
+  source = "./modules/EC2"
+  ami = var.ami
+  instance_type = var.instance_type
+}
+
+module "my-instance-2" {
   source = "./modules/EC2"
   ami = var.ami
   instance_type = var.instance_type
@@ -35,7 +41,11 @@ module "my-instance" {
 
 module "my-load-balancer" {
   source = "./modules/LoadBalancer"
-  security_group_id = module.my-instance.security_group_id
+  security_group_id = module.my-instance-1.security_group_id
   subnet_ids = [module.my-basic-vpc.public_subnet_id]
   vpc = module.my-basic-vpc.vpc
+  instance_ids = [
+    module.my-instance-1.instance_id,
+    module.my-instance-2.instance_id
+  ]
 }
